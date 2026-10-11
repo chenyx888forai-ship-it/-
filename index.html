@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CHEN'S PERSONAL PORTFOLIO</title>
+  <style>
+    :root {
+      --green:#0a5b2b; --green-dark:#063c20; --paper:#f4edd9; --yellow:#ffd94c;
+      --orange:#f26b2f; --blue:#243382; --ink:#11110f; --cream:#fff8e7; --red:#d83d38;
+      --shadow:0 18px 45px rgba(0,0,0,.28); --line:3px solid var(--ink);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:#10100f;color:var(--ink);font-family:Arial,"Noto Sans SC",sans-serif;overflow-x:hidden}
+    button,input{font:inherit}
+    a{color:inherit}
+    [contenteditable="true"]{outline:2px dashed transparent;outline-offset:5px;border-radius:3px;transition:.2s}
+    body.editing [contenteditable="true"]{outline-color:rgba(255,217,76,.65);cursor:text}
+    body.editing [contenteditable="true"]:focus{outline-color:var(--yellow);background:rgba(255,255,255,.08)}
+    .toolbar{position:fixed;z-index:100;right:18px;top:18px;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:calc(100vw - 36px)}
+    .toolbar button,.toolbar select,.toolbar input{border:2px solid #111;background:#fff;padding:10px 14px;border-radius:999px;box-shadow:4px 4px 0 #111;font-weight:800}
+    .toolbar button{cursor:pointer}.toolbar select{cursor:pointer}.toolbar input{width:78px}
+    .toolbar button:hover,.toolbar button:focus-visible,.toolbar select:focus-visible,.toolbar input:focus-visible{transform:translate(-1px,-1px);box-shadow:6px 6px 0 #111;outline:none}
+    .toolbar :disabled{opacity:.48;cursor:not-allowed;transform:none!important;box-shadow:3px 3px 0 #111!important}
+    .toolbar .primary{background:var(--yellow)}
+    .selection-hint{align-self:center;background:#111;color:#fff;padding:8px 12px;border-radius:999px;font-size:12px;font-weight:900;white-space:nowrap}
+    [data-key].format-target{outline-color:#ff7a36!important;outline-width:3px!important}
+    .status{position:fixed;z-index:110;left:50%;bottom:22px;transform:translateX(-50%) translateY(90px);background:#111;color:#fff;padding:10px 18px;border-radius:999px;transition:.3s;pointer-events:none}
+    .status.show{transform:translateX(-50%) translateY(0)}
+    nav{position:absolute;z-index:20;top:26px;left:5vw;right:5vw;display:flex;align-items:center;justify-content:space-between;color:#fff;font-size:12px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+    nav .links{display:flex;gap:20px}
+    nav a{text-decoration:none}
+    .hero{min-height:100vh;position:relative;overflow:hidden;padding:110px 5vw 80px;background:var(--green);color:white;
+      background-image:linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px);background-size:34px 34px}
+    .hero:before,.hero:after{content:"";position:absolute;border:3px solid rgba(255,217,76,.2);border-radius:50%;width:180px;height:180px}
+    .hero:before{left:-70px;top:22%}.hero:after{right:-50px;bottom:8%}
+    .yearburst{position:absolute;left:5vw;top:105px;background:var(--yellow);color:var(--blue);clip-path:polygon(50% 0,61% 25%,85% 9%,77% 36%,100% 40%,77% 54%,94% 78%,66% 70%,61% 100%,46% 75%,25% 95%,28% 65%,0 65%,20% 45%,2% 24%,33% 30%);width:125px;height:125px;display:grid;place-items:center;font-size:24px;font-weight:1000;transform:rotate(-8deg);z-index:4}
+    .board{position:relative;z-index:3;max-width:1120px;min-height:610px;margin:60px auto 0;padding:72px 68px 60px;background:#a66f43;border:22px solid #7b4c2d;box-shadow:inset 0 0 60px rgba(46,22,6,.55),var(--shadow);transform:rotate(-1.2deg);
+      background-image:radial-gradient(rgba(40,19,5,.32) 1px,transparent 1.5px),radial-gradient(rgba(255,255,255,.12) 1px,transparent 1.5px);background-size:8px 8px,13px 13px}
+    .pin{position:absolute;width:22px;height:22px;border-radius:50%;background:var(--red);box-shadow:2px 5px 6px #4e2218;top:-9px;right:10%;z-index:5}
+    .hero-kicker{display:inline-block;background:var(--paper);color:var(--ink);padding:8px 14px;font-weight:900;transform:rotate(-2deg);box-shadow:5px 5px 0 rgba(0,0,0,.25)}
+    .hero-title{position:relative;margin:25px 0 20px;font-family:Impact,"Arial Black",sans-serif;font-size:clamp(72px,13vw,190px);line-height:.76;letter-spacing:-.045em;text-transform:uppercase;color:var(--blue);-webkit-text-stroke:10px white;paint-order:stroke fill;text-shadow:10px 12px 0 var(--yellow),14px 16px 0 rgba(0,0,0,.3);transform:rotate(-2deg)}
+    .hero-title span{display:block;margin-left:12%;font-size:.62em;color:#fff;-webkit-text-stroke:8px var(--blue);text-shadow:8px 9px 0 var(--orange)}
+    .hero-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:40px}
+    .sticker{display:inline-block;background:var(--yellow);color:var(--ink);padding:10px 18px;border:3px solid #fff;border-radius:50px;font-weight:1000;text-transform:uppercase;box-shadow:4px 5px 0 var(--blue);transform:rotate(-2deg)}
+    .sticker:nth-child(2){background:var(--orange);transform:rotate(2deg)}
+    .sticker:nth-child(3){background:#fff}
+    .doodle{position:absolute;color:var(--yellow);font-size:90px;font-weight:1000;right:5%;bottom:1%;transform:rotate(12deg)}
+    .section{padding:110px 5vw;position:relative}
+    .section-label{font-size:12px;letter-spacing:.2em;font-weight:900;text-transform:uppercase;margin-bottom:22px}
+    .about{background:var(--paper);overflow:hidden}
+    .about:before{content:"";position:absolute;left:0;right:0;top:-18px;height:36px;background:linear-gradient(135deg,transparent 18px,var(--paper) 0) 0 0/36px 36px repeat-x}
+    .about-grid{max-width:1180px;margin:auto;display:grid;grid-template-columns:.8fr 1.2fr;gap:70px;align-items:center}
+    .portrait{position:relative;min-height:560px;background:#151515;border:10px solid #fff;box-shadow:var(--shadow);transform:rotate(-2deg);overflow:hidden}
+    .portrait:before{content:"YOUR\A PHOTO";white-space:pre;position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#fff;font-family:Impact,sans-serif;font-size:70px;line-height:.9;opacity:.25}
+    .portrait img{width:100%;height:100%;object-fit:cover;position:absolute}
+    .image-action{position:absolute;z-index:6;left:50%;bottom:22px;transform:translateX(-50%);border:2px solid #111;background:var(--yellow);padding:9px 14px;border-radius:999px;font-weight:900;cursor:pointer;white-space:nowrap}
+    .tape{position:absolute;z-index:5;width:140px;height:35px;background:rgba(255,217,76,.8);left:50%;top:-9px;transform:translateX(-50%) rotate(3deg)}
+    .about-copy h2,.contents h2,.project-title,.contact h2{font-family:Impact,"Arial Black",sans-serif;text-transform:uppercase;margin:0;line-height:.9}
+    .about-copy h2{font-size:clamp(58px,8vw,110px);color:var(--blue);letter-spacing:-.03em}
+    .about-copy .lead{font-size:clamp(22px,3vw,38px);line-height:1.15;font-weight:900;max-width:780px;margin:26px 0}
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:36px}
+    .note{padding:20px;background:#fff;border:var(--line);box-shadow:7px 7px 0 var(--ink)}
+    .note:nth-child(2){background:var(--yellow);transform:rotate(1deg)}
+    .note h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.15em}
+    .note p{margin:5px 0;line-height:1.55}
+    .contents{background:var(--green);color:#fff;overflow:hidden}
+    .contents-wrap{max-width:1180px;margin:auto}
+    .contents h2{font-size:clamp(62px,10vw,142px);color:#fff;-webkit-text-stroke:4px var(--blue);paint-order:stroke fill;text-shadow:7px 7px 0 var(--yellow);transform:rotate(-1deg)}
+    .folder-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:65px}
+    .folder{position:relative;min-height:260px;padding:68px 22px 26px;color:var(--ink);border:3px solid var(--ink);box-shadow:9px 10px 0 rgba(0,0,0,.3);transform:rotate(-2deg);background:var(--orange)}
+    .folder:nth-child(2){background:#ef5e3a;transform:rotate(1deg)}.folder:nth-child(3){background:#7dc4df;transform:rotate(-1deg)}.folder:nth-child(4){background:var(--yellow);transform:rotate(2deg)}
+    .folder:before{content:"";position:absolute;top:-27px;left:-3px;width:58%;height:30px;border:3px solid var(--ink);border-bottom:0;background:inherit;border-radius:10px 14px 0 0}
+    .folder .num{font-size:14px;font-weight:900}.folder h3{font-family:Impact,sans-serif;font-size:38px;line-height:.95;margin:32px 0 8px;text-transform:uppercase}.folder p{font-size:14px;font-weight:700;line-height:1.45}
+    .project{background:#111;color:#fff;padding-bottom:0;overflow:hidden}
+    .project-head{max-width:1180px;margin:auto;display:grid;grid-template-columns:1.3fr .7fr;gap:50px;align-items:end}
+    .project-title{font-size:clamp(70px,12vw,160px);color:var(--yellow);letter-spacing:-.03em}
+    .project-title span{color:#fff;-webkit-text-stroke:3px var(--orange);paint-order:stroke fill}
+    .project-meta{border-top:3px solid #fff;padding-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:13px;line-height:1.5}
+    .project-meta b{display:block;color:var(--yellow);text-transform:uppercase;margin-bottom:6px}
+    .hero-slot{max-width:1180px;height:620px;margin:70px auto 0;position:relative;background:#262626;border:4px solid #fff;overflow:hidden}
+    .hero-slot:before{content:"点击添加项目主图或视频\A 建议比例 16:9 · MP4 / WebM";white-space:pre;position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#aaa;font-size:28px;font-weight:900}
+    .hero-slot.portrait-video{width:min(520px,100%);height:auto;aspect-ratio:9/16}
+    .hero-slot.portrait-video:before{content:"点击添加竖屏视频\A 建议比例 9:16 · MP4 / WebM"}
+    .hero-slot img,.hero-slot video,.media-slot img{position:absolute;width:100%;height:100%;object-fit:cover}
+    .hero-slot video{background:#000;z-index:2}
+    .hero-slot img{z-index:2}
+    .hero-slot .image-action{z-index:7;left:22px;transform:none}
+    .poster-action{position:absolute;z-index:7;right:22px;bottom:22px;border:2px solid #111;background:#fff;padding:9px 14px;border-radius:999px;font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #111}
+    .poster-action:hover,.poster-action:focus-visible{transform:translate(-1px,-1px);box-shadow:6px 6px 0 #111}
+    .paper-strip{margin-top:0;background:var(--yellow);color:var(--ink);padding:90px 5vw;clip-path:polygon(0 4%,4% 1%,9% 5%,14% 2%,20% 5%,25% 1%,31% 4%,38% 1%,44% 4%,51% 0,58% 4%,66% 1%,73% 4%,80% 1%,88% 5%,94% 2%,100% 5%,100% 100%,0 100%)}
+    .repeat-project{padding-bottom:110px}
+    .standalone-image-page{background:#111;padding:95px 5vw}
+    .standalone-image{max-width:1180px;height:620px;margin:auto;position:relative;background:#303030;border:4px solid #fff;overflow:hidden}
+    .standalone-image:before{content:"点击替换图片";position:absolute;inset:0;display:grid;place-items:center;color:#999;font-size:28px;font-weight:900}
+    .standalone-image img{position:absolute;z-index:2;width:100%;height:100%;object-fit:cover}
+    .standalone-image .image-action{z-index:7}
+    .strategy{max-width:1180px;margin:auto;display:grid;grid-template-columns:.85fr 1.15fr;gap:70px;align-items:start}
+    .strategy h3{font-family:Impact,sans-serif;font-size:clamp(52px,7vw,92px);line-height:.9;margin:0;color:var(--blue);text-transform:uppercase}
+    .strategy-copy{font-size:20px;line-height:1.55;font-weight:700}
+    .pill-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}.pill{border:3px solid #111;border-radius:999px;padding:8px 14px;background:#fff;font-weight:900}
+    .system{background:var(--cream)}
+    .system-grid{max-width:1180px;margin:auto;display:grid;grid-template-columns:1fr 1fr;gap:28px}
+    .system-card{position:relative;min-height:390px;border:var(--line);padding:34px;overflow:hidden;background:#fff;box-shadow:8px 8px 0 #111}
+    .system-card.dark{background:#171717;color:#fff}.system-card h3{font-family:Impact,sans-serif;font-size:48px;margin:0 0 20px;text-transform:uppercase}.system-card p{max-width:520px;line-height:1.55}
+    .palette{display:flex;gap:0;position:absolute;left:34px;right:34px;bottom:34px;height:120px}.swatch{flex:1;border:2px solid #111;display:flex;align-items:end;padding:10px;font-size:11px;font-weight:900}.swatch:nth-child(1){background:var(--green);color:#fff}.swatch:nth-child(2){background:var(--yellow)}.swatch:nth-child(3){background:var(--orange)}.swatch:nth-child(4){background:var(--blue);color:#fff}
+    .type-demo{position:absolute;left:30px;bottom:24px;width:170px;height:132px;transform:rotate(-4deg);filter:drop-shadow(7px 8px 0 var(--orange))}
+    .type-demo svg{display:block;width:100%;height:100%;overflow:visible}
+    .applications{background:#1b1b1b;color:#fff}
+    .app-wrap{max-width:1180px;margin:auto}.app-head{display:flex;justify-content:space-between;align-items:end;gap:30px;margin-bottom:40px}.app-head h2{font-family:Impact,sans-serif;font-size:clamp(58px,9vw,120px);margin:0;color:var(--yellow);text-transform:uppercase}.app-head p{max-width:380px;line-height:1.5}
+    .media-grid{display:grid;grid-template-columns:1.4fr .6fr;grid-template-rows:400px 400px;gap:18px}.media-slot{position:relative;background:#303030;border:3px solid #fff;overflow:hidden}.media-grid>.media-slot:first-child{grid-row:1/3}.media-slot:before{content:"点击替换图片";position:absolute;inset:0;display:grid;place-items:center;color:#999;font-weight:900}.media-slot .image-action{bottom:16px}
+    .more-work{background:var(--paper)}
+    .more-wrap{max-width:1180px;margin:auto}.more-wrap h2{font-family:Impact,sans-serif;font-size:clamp(60px,9vw,125px);margin:0 0 50px;color:var(--blue);text-transform:uppercase}
+    .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:34px 28px}.mini{background:#fff;border:var(--line);box-shadow:9px 9px 0 #111;transform:rotate(-1deg);overflow:hidden}.mini:nth-child(3n+2){transform:rotate(1.5deg)}.mini:nth-child(3n){transform:rotate(-.5deg)}
+    .mini .media-slot{height:auto;aspect-ratio:2/3;border:0;border-bottom:3px solid #111}.mini .media-slot:before{content:"点击添加长图\A 建议比例 2:3";white-space:pre;text-align:center;line-height:1.6}.mini-copy{padding:22px}.mini h3{font-family:Impact,sans-serif;font-size:32px;margin:0 0 8px;text-transform:uppercase}.mini p{margin:0;line-height:1.45}
+    .works-notes{margin-top:72px;display:grid;grid-template-columns:.72fr 1.28fr;gap:24px}
+    .works-link-card,.works-explanation{border:var(--line);box-shadow:8px 8px 0 #111;background:#fff;padding:26px;min-width:0}
+    .works-link-card{background:var(--yellow);transform:rotate(-.5deg)}.works-explanation{transform:rotate(.35deg)}
+    .works-link-card .section-label,.works-explanation .section-label{margin-bottom:16px}
+    .works-link{display:block;border:3px solid #111;border-radius:999px;background:#fff;color:var(--blue);padding:15px 20px;font-weight:900;overflow-wrap:anywhere;text-decoration:none}
+    .works-explanation p{min-height:120px;margin:0;border:3px dashed var(--yellow);padding:18px;font-size:18px;line-height:1.65}
+    .works-explanation .notes-image{margin-top:22px;width:100%;height:auto;aspect-ratio:3/2;border:3px solid #111;background:#303030}
+    .works-explanation .notes-image:before{content:"点击添加作品说明图片\A 建议比例 3:2";white-space:pre;text-align:center;line-height:1.6}
+    .notes-extra-block{margin-top:46px;border:var(--line);background:#fff;padding:28px;box-shadow:9px 9px 0 #111}
+    .notes-extra-block>.section-label{margin-bottom:24px}
+    .notes-extra-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px;align-items:start}
+    .notes-extra-slot{width:100%;height:auto;border:3px solid #111;background:#303030;box-shadow:6px 6px 0 #111}
+    .notes-extra-slot.portrait-note{aspect-ratio:2/3}.notes-extra-slot.landscape-note{aspect-ratio:3/2}
+    .notes-extra-slot.portrait-note:before{content:"点击添加竖图\A 2:3";white-space:pre;text-align:center;line-height:1.6}
+    .notes-extra-slot.landscape-note:before{content:"点击添加横图\A 3:2";white-space:pre;text-align:center;line-height:1.6}
+    .contact{background:var(--green);color:#fff;min-height:78vh;display:grid;place-items:center;text-align:center;overflow:hidden}
+    .contact-card{max-width:980px;padding:70px;background:#a66f43;border:18px solid #754628;box-shadow:var(--shadow);transform:rotate(1deg);background-image:radial-gradient(rgba(40,19,5,.28) 1px,transparent 1.5px);background-size:8px 8px}
+    .contact h2{font-size:clamp(70px,12vw,160px);color:#fff;-webkit-text-stroke:6px var(--blue);paint-order:stroke fill;text-shadow:8px 9px 0 var(--yellow)}
+    .contact p{font-size:20px;font-weight:800}.contact a{display:inline-block;margin-top:20px;background:var(--yellow);color:#111;border:3px solid #111;padding:14px 24px;border-radius:999px;font-weight:1000;text-decoration:none;box-shadow:6px 6px 0 #111}
+    footer{background:#111;color:#aaa;padding:25px 5vw;display:flex;justify-content:space-between;font-size:12px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:850px){
+      .toolbar{left:12px;right:12px;top:auto;bottom:14px;justify-content:center}.toolbar button,.toolbar select,.toolbar input{padding:8px 10px;font-size:12px}.toolbar input{width:66px}.selection-hint{font-size:11px;padding:7px 10px}.status{bottom:112px}.hero-slot .image-action{left:12px;bottom:14px}.poster-action{right:12px;bottom:14px;font-size:12px;padding:8px 10px}
+      nav .links{display:none}.hero{padding-left:20px;padding-right:20px}.yearburst{left:18px;top:75px;width:95px;height:95px;font-size:18px}.board{padding:65px 24px 40px;border-width:13px;min-height:540px;margin-top:55px}.hero-title{-webkit-text-stroke-width:5px;text-shadow:6px 7px 0 var(--yellow),9px 10px 0 rgba(0,0,0,.3)}.hero-title span{-webkit-text-stroke-width:4px}
+      .section{padding:80px 22px}.about-grid,.project-head,.strategy{grid-template-columns:1fr}.portrait{min-height:480px}.info-grid{grid-template-columns:1fr}.folder-grid{grid-template-columns:1fr 1fr}.folder{min-height:220px}.hero-slot,.standalone-image{height:55vw;min-height:300px}.hero-slot.portrait-video{width:min(520px,100%);height:auto;min-height:0;aspect-ratio:9/16}.system-grid{grid-template-columns:1fr}.media-grid{grid-template-columns:1fr;grid-template-rows:400px 300px 300px}.media-grid>.media-slot:first-child{grid-row:auto}.mini-grid,.works-notes,.notes-extra-gallery{grid-template-columns:1fr}.contact-card{padding:55px 20px;border-width:12px}footer{padding-bottom:90px}
+    }
+    @media(max-width:520px){.folder-grid{grid-template-columns:1fr}.project-meta{grid-template-columns:1fr}.app-head{display:block}.media-grid{grid-template-rows:320px 260px 260px}.portrait{min-height:400px}.hero-meta{gap:8px}.sticker{font-size:12px}.doodle{display:none}}
+  </style>
+</head>
+<body class="">
+  
+  
+
+  <header class="hero" id="top">
+    <nav><a href="#top" data-key="brand">YOUR NAME@ riley chen</a><div class="links"><a href="#about" data-key="navAbout">ABOUT</a><a href="#work" data-key="navWork">WORK</a><a href="#contact" data-key="navContact">CONTACT</a></div></nav>
+    <div class="yearburst" data-key="year">2026</div>
+    <div class="board">
+      <div class="pin"></div>
+      <span class="hero-kicker" data-key="role">POETFOILO/ CREATIVE</span>
+      <h1 class="hero-title" data-key="heroTitle">my&nbsp;<span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;My Portfolio</span></h1>
+      <div class="hero-meta">
+        <span class="sticker" data-key="tag1">AI VIDEO</span>
+        <span class="sticker" data-key="tag2">PHOTOGRAPHY</span>
+        <span class="sticker" data-key="tag3">VIDEO PRODUCTION</span>
+      </div>
+      <div class="doodle">✦</div>
+    </div>
+  </header>
+
+  <section class="section about" id="about">
+    <div class="about-grid">
+      <div class="portrait image-slot" data-image-key="portrait">
+        <div class="tape"></div><img alt="个人照片" src="image-cd7a37d4ca694dda.jpg">
+      </div>
+      <div class="about-copy">
+        <div class="section-label" data-key="aboutLabel">01 / WHO AM I?</div>
+        <h2 data-key="aboutTitle">Hi, I'm<br>rilry chen&nbsp;<div>陈雨轩</div></h2>
+        <p class="lead" data-key="aboutLead">一名喜欢创意.创造.爱探究AI.超强执行力的摄影师。</p>
+        <p data-key="aboutBody"><p>毕业于北京城市学院摄影系，拥有4年商业摄影及影视剧组从业经验，曾参与《柳舟记》《锦绣安宁》《似锦》等多部影视剧的视觉拍摄与宣传制作。擅长商业摄影、人物影像、视觉叙事及镜头语言表达，具备扎实的影像审美、分镜设计和视觉执行能力。目前积极探索AI影像创作，希望将传统影视制作经验与AI生成技术相结合，参与<strong>AI短片、AI广告、AI影视内容及创意视觉项目</strong>的制作。工作中注重创意表达与实际落地，善于团队协作、高效沟通，能够快速理解项目需求并推动视觉创意的实现。</p></p>
+        <div class="info-grid">
+          <div class="note"><h3 data-key="experienceTitle">EXPERIENCE</h3><p data-key="experience">北京小满映画文化有限公司<div>摄影师<br><div>2022-——至今</div></div></p></div>
+          <div class="note"><h3 data-key="educationTitle">EDUCATION + CONTACT</h3><p data-key="education">北京城市学院 / 摄影/ 2019<br>phchenyxoto@qq.com<br>+86 13820767266<div>WeChat 13820767266</div></p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contents" id="work">
+    <div class="contents-wrap">
+      <div class="section-label" data-key="contentsLabel">02 / SELECTED WORK</div>
+      <h2 data-key="contentsTitle">TABLE OF<br>CONTENTS</h2>
+      <div class="folder-grid">
+        <article class="folder"><span class="num" data-key="folder1num">01</span><h3 data-key="folder1title">AI VIDEO</h3><p data-key="folder1copy">作品展现/不同风格与形式</p></article>
+        <article class="folder"><span class="num" data-key="folder2num">02</span><h3 data-key="folder2title"><h3 data-key="folder2title" style="outline: rgb(255, 217, 76) dashed 2px; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;"></h3><h3 data-key="folder2title" style="outline: rgb(255, 217, 76) dashed 2px; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">ai video process</h3></h3><p data-key="folder2copy">视频制作全过程/海报</p></article>
+        <article class="folder"><span class="num" data-key="folder3num">03</span><h3 data-key="folder3title"><h3 data-key="folder2title" style="outline: rgb(255, 217, 76) dashed 2px; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;" class="">PHOTOGRAPHY</h3></h3><p data-key="folder3copy">日常/写真/海报</p></article>
+        <article class="folder"><span class="num" data-key="folder4num">04</span><h3 data-key="folder4title">video</h3><p data-key="folder4copy">影像/特辑/时尚活动</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section project" id="project-01">
+    <div class="project-head">
+      <div><div class="section-label" data-key="projectNo">PROJECT 01 / BRAND IDENTITY</div><h2 class="project-title" data-key="projectTitle" style="font-size: 67px;">PROJECT&nbsp; &nbsp;one<div><div><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;</span></div><div><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; “最后一件”</span></div></div></h2></div>
+      <div class="project-meta">
+        <div><b data-key="roleMetaLabel">Role</b><span data-key="roleMeta">Director/Art Direction/Video Production</span></div>
+        <div><b data-key="yearMetaLabel">Year</b><span data-key="yearMeta">2026</span></div>
+        <div><b data-key="clientMetaLabel">Client</b><span data-key="clientMeta">Personal Project</span></div>
+        <div><b data-key="deliverablesMetaLabel">Deliverables</b><span data-key="deliverablesMeta">WARM STORY ,DOUBLE 11 CAMPAIGNIdentity, Packaging, Campaign</span></div>
+      </div>
+    </div>
+    <div class="hero-slot media-upload-slot" data-media-key="projectHero"><video controls="" playsinline="" preload="metadata" src="video-a1f72cf21f5deaa3-web.mp4" poster="image-d9c8feb196b5f7b6.jpg"></video></div>
+    <div class="paper-strip">
+      <div class="strategy">
+        <h3 data-key="strategyTitle">The Challenge<br>&amp; Idea</h3>
+        <div class="strategy-copy"><p data-key="strategyBody" style="font-size: 12px;"><p><strong>01｜创作背景</strong></p><p>以双十一购物狂欢为背景，结合萌宠拟人化与温情叙事，探索购物背后的情感价值，打造兼具趣味性与治愈感的创意短片。</p><p><strong>02｜目标受众</strong><br>18-35岁年轻消费群体，聚焦都市独居青年、养宠人群及情感共鸣型消费者。</p><p><strong>03｜核心表达</strong><br>通过猫咪给主人偷偷购买礼物的暖心反转，诠释爱与陪伴的双向奔赴，传递“买的不只是商品，更是藏在生活里的爱”的核心理念。</p><p><strong>核心关键词：</strong> 萌宠拟人 / 温情反转 / 双向陪伴 / 情感营销</p></p><div class="pill-row"><span class="pill" data-key="pill1">EMOTION&nbsp;</span><span class="pill" data-key="pill2">TENDER</span><span class="pill" data-key="pill3">MUTUAL COMPANIONSHIP</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section applications">
+    <div class="app-wrap">
+      <div class="app-head"><h2 data-key="appTitle">Applications</h2><p data-key="appCopy">用libtv整体操作工作流,mj和pinterset共同生成资产图,chatGPT生成视频脚本和提示词codex生成封面图,剪映完成整个视频的配乐和后期剪辑。</p></div>
+      <div class="media-grid">
+        <div class="media-slot image-slot" data-image-key="application1"><img alt="应用图一" src="image-48766b5618fd871d.png"></div>
+        <div class="media-slot image-slot" data-image-key="application2"><img alt="应用图二" src="image-0f83b9da1e917b34.jpg"></div>
+        <div class="media-slot image-slot" data-image-key="application3"><img alt="应用图三" src="image-1465cfb146ec496c.jpg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="standalone-image-page">
+    <div class="standalone-image image-slot" data-image-key="caseDividerImage"><img alt="案例衔接大图" src="image-940b1394165d5195.jpg"></div>
+  </section>
+
+  <section class="section project repeat-project" id="project-02">
+    <div class="project-head">
+      <div><div class="section-label" data-key="project2No">PROJECT 02 / VIDEO CASE STUDY</div><h2 class="project-title" data-key="project2Title" style="font-size: 54px;">PROJECT&nbsp; two&nbsp;<div>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</div><span style="font-size: 67px; letter-spacing: -2.01px; -webkit-text-stroke: 3px rgb(242, 107, 47);">&nbsp; &nbsp; &nbsp;</span><span style="font-size: 67px; letter-spacing: -2.01px; -webkit-text-stroke: 3px rgb(242, 107, 47);">the office is our runway</span></h2></div>
+      <div class="project-meta">
+        <div><b data-key="project2RoleLabel">Role</b><span data-key="project2Role">Director/Art Direction/Video Production</span></div>
+        <div><b data-key="project2YearLabel">Year</b><span data-key="project2Year">2026</span></div>
+        <div><b data-key="project2ClientLabel">Client</b><span data-key="project2Client">Personal Project</span></div>
+        <div><b data-key="project2DeliverablesLabel">Deliverables</b><span data-key="project2Deliverables">OFFICE · FASHION · WORKPLACE</span></div>
+      </div>
+    </div>
+    <div class="hero-slot portrait-video media-upload-slot" data-media-key="projectVideo2"><video controls="" playsinline="" preload="metadata" src="video-5aafc8432373b618-web.mp4" poster="image-dd04a7179b1c9d68.png"></video></div>
+  </section>
+
+  <section class="paper-strip">
+    <div class="strategy">
+      <h3 data-key="strategy2Title">The Challenge<br>&amp; Idea</h3>
+      <div class="strategy-copy"><p data-key="strategy2Body" style="font-size: 12px;"><p><strong>01｜创作背景</strong><br>以都市职场生活为灵感，将日常通勤与时装走秀结合，打破传统办公室的刻板印象。</p><p><strong>02｜目标受众</strong><br>20–35岁追求时尚、个性表达与生活品质的都市年轻职场女性。</p><p><strong>03｜核心表达</strong><br>通过五位女性不同风格的通勤穿搭，展现自信、独立与多元的时尚态度，让平凡的上班日常成为一场专属时装秀。</p><p><strong>核心理念：</strong><br><strong>「办公室即秀场，日常亦时尚。」</strong></p></p><div class="pill-row"><span class="pill" data-key="project2Pill1">OFFICE&nbsp;</span><span class="pill" data-key="project2Pill2">FASHION&nbsp;</span><span class="pill" data-key="project2Pill3">WORKPLACE</span></div></div>
+    </div>
+  </section>
+
+  <section class="section applications">
+    <div class="app-wrap">
+      <div class="app-head"><h2 data-key="app2Title">Applications</h2><p data-key="app2Copy">用libtv整体操作工作流,mj和pinterset共同生成资产图,可灵生成全部视频,chatGPT生成视频脚本和提示词codex生成封面图,剪映完成整个视频的配乐和后期剪辑。</p></div>
+      <div class="media-grid">
+        <div class="media-slot image-slot" data-image-key="application4"><img alt="项目二应用图一" src="image-e0a352b6c7038de3.png"></div>
+        <div class="media-slot image-slot" data-image-key="application5"><img alt="项目二应用图二" src="image-3e387ba3bfcd25ce.jpg"></div>
+        <div class="media-slot image-slot" data-image-key="application6"><img alt="项目二应用图三" src="image-13ed15e80d92a827.jpg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section project repeat-project" id="project-03">
+    <div class="project-head">
+      <div><div class="section-label" data-key="project3No">PROJECT 03 / VIDEO CASE STUDY</div><h2 class="project-title" data-key="project3Title" style="font-size: 70px;">PROJECT&nbsp; &nbsp; &nbsp;&nbsp;<span>THREE</span><div><span><br></span></div><div><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1%的重量</span></div></h2></div>
+      <div class="project-meta">
+        <div><b data-key="project3RoleLabel">Role</b><span data-key="project3Role">Creative Direction<br>Video Design</span></div>
+        <div><b data-key="project3YearLabel">Year</b><span data-key="project3Year">2026</span></div>
+        <div><b data-key="project3ClientLabel">Client</b><span data-key="project3Client">Personal Project</span></div>
+        <div><b data-key="project3DeliverablesLabel">Deliverables</b><span data-key="project3Deliverables">Phone Battery Life, Psychological Stress, WorkPlace</span></div>
+      </div>
+    </div>
+    <div class="hero-slot media-upload-slot" data-media-key="projectVideo3"><video controls="" playsinline="" preload="metadata" src="video-37b20599894d2074-web.mp4" poster="image-d96ca81116426cb9.png"></video></div>
+  </section>
+
+  <section class="paper-strip">
+    <div class="strategy">
+      <h3 data-key="strategy3Title">The Challenge<br>&amp; Idea</h3>
+      <div class="strategy-copy"><p data-key="strategy3Body" style="font-size: 12px;"><p><strong>01｜创作背景</strong><br>聚焦现代人普遍存在的手机电量焦虑，打破传统续航广告以产品参数为主的表达方式，用超现实视觉呈现心理压力。</p><p><strong>02｜目标受众</strong><br>18–35岁年轻都市人群，尤其是高频使用手机的学生及职场人士。</p><p><strong>03｜核心表达</strong><br>将电量百分比具象化为沉重的实体，通过低电量的压迫感与超长续航的自由感形成反差，传递科技让生活更轻松的理念。</p><p><strong>04｜核心广告语</strong><br><strong>「1%，不该这么沉重。」</strong><br><strong>「让你更晚遇见1%。」</strong></p></p><div class="pill-row"><span class="pill" data-key="project3Pill1">Phone Battery Life</span><span class="pill" data-key="project3Pill2">Psychological Stress</span><span class="pill" data-key="project3Pill3">WorkPlace</span></div></div>
+    </div>
+  </section>
+
+  <section class="section applications">
+    <div class="app-wrap">
+      <div class="app-head"><h2 data-key="app3Title">Applications</h2><p data-key="app3Copy">用libtv整体操作工作流,mj和pinterset共同生成资产图,即梦seedance2.5生成全部视频,chatGPT生成视频脚本和提示词,codex生成封面图,剪映完成整个视频的配乐和后期剪辑。</p></div>
+      <div class="media-grid">
+        <div class="media-slot image-slot" data-image-key="application7"><img alt="项目三应用图一" src="image-a990e5f41b596e3d.jpg"></div>
+        <div class="media-slot image-slot" data-image-key="application8"><img alt="项目三应用图二" src="image-00368dde009d88d1.jpg"></div>
+        <div class="media-slot image-slot" data-image-key="application9"><img alt="项目三应用图三" src="image-197f5569c6e4b1cb.jpg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section project repeat-project" id="project-04">
+    <div class="project-head">
+      <div><div class="section-label" data-key="project4No">PROJECT 04 / VERTICAL VIDEO CASE STUDY</div><h2 class="project-title" data-key="project4Title" style="font-size: 70px;">PROJECT&nbsp; &nbsp;&nbsp;<span>FOUR</span><div><span><br></span></div><div><span>&nbsp; &nbsp; &nbsp; “喵记”烤冷面</span></div></h2></div>
+      <div class="project-meta">
+        <div><b data-key="project4RoleLabel">Role</b><span data-key="project4Role">Creative Direction<br>Video Design</span></div>
+        <div><b data-key="project4YearLabel">Year</b><span data-key="project4Year">2026.3</span></div>
+        <div><b data-key="project4ClientLabel">Client</b><span data-key="project4Client">Personal Project</span></div>
+        <div><b data-key="project4DeliverablesLabel">Deliverables</b><span data-key="project4Deliverables">CAT STALL, NIGHT MARKETl, GRILLED COLD NOODLES</span></div>
+      </div>
+    </div>
+    <div class="hero-slot portrait-video media-upload-slot" data-media-key="projectVideo4"><video controls="" playsinline="" preload="metadata" src="video-443afa2752a140bf-web.mp4"></video></div>
+  </section>
+
+  <section class="paper-strip">
+    <div class="strategy">
+      <h3 data-key="strategy4Title">The Challenge<br>&amp; Idea</h3>
+      <div class="strategy-copy"><p data-key="strategy4Body"><p style="font-size: 12px;"><strong>01｜创作背景</strong></p><p style="font-size: 12px;">以夜市摆摊背景，结合萌宠拟人化与温情叙事，探索猫咪拟人化背后的情感价值，打造兼具趣味性与治愈感的创意短片。</p><p style="font-size: 12px;"><strong>02｜目标受众</strong><br>18-35岁年轻消费群体，聚焦都市独居青年、养宠人群及情感共鸣型消费者。</p><p style="font-size: 12px;"><strong>03｜核心表达</strong><br>通过猫咪摆摊可爱且完整做好烤冷面的流程，诠释 猫咪的用心以及可爱，传递摆摊的不易映射,平民的赚钱并不容易核心理念。</p></p><div class="pill-row"><span class="pill" data-key="project4Pill1">CAT STALL</span><span class="pill" data-key="project4Pill2">NIGHT MARKET</span><span class="pill" data-key="project4Pill3">GRILLED COLD NOODLES</span></div></div>
+    </div>
+  </section>
+
+  <section class="section applications">
+    <div class="app-wrap">
+      <div class="app-head"><h2 data-key="app4Title">Applications</h2><p data-key="app4Copy">用星流整体操作工作流共同生成资产图,即梦seedance2.0生成全部视频,豆包生成视频脚本和提示词,抖音完成封面图,剪映完成整个视频的配乐和后期剪辑。</p></div>
+      <div class="media-grid">
+        <div class="media-slot image-slot" data-image-key="application10"><img alt="项目四应用图一" src="image-fd884a05f053c405.png"></div>
+        <div class="media-slot image-slot" data-image-key="application11"><img alt="项目四应用图二" src="image-1e91ff3d39e60eee.jpg"></div>
+        <div class="media-slot image-slot" data-image-key="application12"><img alt="项目四应用图三" src="image-1e8e117dcf6a84c4.jpg"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section system">
+    <div class="system-grid">
+      <article class="system-card"><div class="section-label" data-key="systemLabel1">VISUAL SYSTEM / 01</div><h3 data-key="paletteTitle"><h3 data-key="folder2title" class="format-target" style="font-size: 38px; line-height: 0.95; margin: 32px 0px 8px; outline: rgb(255, 217, 76) dashed 2px; background-image: initial; background-position: initial; background-size: initial; background-repeat: initial; background-attachment: initial; background-origin: initial; background-clip: initial;">PHOTOGRAPHY</h3></h3><p data-key="paletteCopy">摄影部分的作品展示</p><div class="palette"><div class="swatch" data-key="swatch1">日常</div><div class="swatch" data-key="swatch2">写真</div><div class="swatch" data-key="swatch3">海报</div><div class="swatch" data-key="swatch4">其他</div></div></article>
+      <article class="system-card dark"><div class="section-label" data-key="systemLabel2">VISUAL SYSTEM / 02</div><h3 data-key="typeTitle">video</h3><p data-key="typeCopy">vlog,特辑,时尚活动,短视频。</p><div class="type-demo" aria-label="可爱摄像机图标"><svg viewBox="0 0 180 140" role="img" aria-hidden="true"><path d="M34 34h85c14 0 24 10 24 24v52c0 14-10 24-24 24H34c-14 0-24-10-24-24V58c0-14 10-24 24-24Z" fill="#ffd84d" stroke="#111" stroke-width="8"></path><path d="m142 64 28-18v76l-28-18Z" fill="#2d3d91" stroke="#111" stroke-width="8" stroke-linejoin="round"></path><circle cx="76" cy="84" r="27" fill="#fff" stroke="#111" stroke-width="7"></circle><circle cx="76" cy="84" r="13" fill="#f36a2a" stroke="#111" stroke-width="5"></circle><circle cx="46" cy="64" r="4" fill="#111"></circle><circle cx="107" cy="64" r="4" fill="#111"></circle><path d="M63 109c8 7 19 7 27 0" fill="none" stroke="#111" stroke-width="5" stroke-linecap="round"></path><path d="m20 22 5-12 5 12 12 5-12 5-5 12-5-12-12-5Z" fill="#fff" stroke="#111" stroke-width="4" stroke-linejoin="round"></path></svg></div></article>
+    </div>
+  </section>
+
+  <section class="section more-work">
+    <div class="more-wrap"><div class="section-label" data-key="moreLabel">03 / MORE PROJECTS</div><h2 data-key="moreTitle">OTHER WORKS</h2>
+      <div class="mini-grid">
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more1"><img alt="项目二" src="image-bca0d972cc4c8427.jpg"></div><div class="mini-copy"><h3 data-key="more1title">Project one</h3><p data-key="more1copy">《柳州记》/ 《锦绣安宁》 / 《似锦》</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more2"><img alt="项目三" src="image-84e9caa2b8e9d39a.jpg"></div><div class="mini-copy"><h3 data-key="more2title">Project two</h3><p data-key="more2copy">电视剧 / 张晚意 / 203-2024</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more3"><img alt="项目四" src="image-0000382a43d61790.jpg"></div><div class="mini-copy"><h3 data-key="more3title">Project three</h3><p data-key="more3copy">《三线谜回》 / 孟子义 / 2024</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more4"><img alt="作品五" src="image-bf161a3000c0e7e1.jpg"></div><div class="mini-copy"><h3 data-key="more4title">Project Four</h3><p data-key="more4copy">《你是迟来的欢喜》 / 郑合惠子 / 2025</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more5"><img alt="作品六" src="image-06d9f5d0e42c6996.jpg"></div><div class="mini-copy"><h3 data-key="more5title">Project five</h3><p data-key="more5copy">日常写真 / 剧照拍摄 / 短视频同步拍摄</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more6"><img alt="作品七" src="image-7e4051e68b7eb16b.jpg"></div><div class="mini-copy"><h3 data-key="more6title">Project six</h3><p data-key="more6copy">商务广告 / 姜佩瑶 / 2026</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more7"><img alt="作品八" src="image-eb0783caf67b9614.jpg"></div><div class="mini-copy"><h3 data-key="more7title">Project seven</h3><p data-key="more7copy">《来战》/ 《云初令》 / 《月下烟火》</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more8"><img alt="作品九" src="image-72b0a4d96694ca94.jpg"></div><div class="mini-copy"><h3 data-key="more8title">Project eight</h3><p data-key="more8copy">电视剧 / 张云龙 / 2025—2026</p></div></article>
+        <article class="mini"><div class="media-slot image-slot" data-image-key="more9"><img alt="作品十" src="image-bd5fd00185d22596.jpg"></div><div class="mini-copy"><h3 data-key="more9title">Project nine</h3><p data-key="more9copy">日常写真 / 剧照拍摄 / 短视频同步拍摄</p></div></article>
+      </div>
+      <div class="works-notes">
+        <div class="works-link-card"><div class="section-label" data-key="worksLinkLabel">CHEN 视频作品 / 百度网盘</div><a class="works-link" href="https://file:///Users/chenyuxuan/Documents/Codex/2026-10-09/8-seedance/outputs/CHENS-video.html" target="_blank" rel="noopener" data-key="worksLink">file:///Users/chenyuxuan/Documents/Codex/2026-10-09/8-seedance/outputs/CHENS-video.html</a></div>
+        <div class="works-explanation"><div class="section-label" data-key="worksExplanationLabel">PROJECT NOTES / 作品说明</div><p data-key="worksExplanation">在这里输入作品背景、创作思路、你负责的部分，以及希望观看者关注的细节。</p><div class="media-slot image-slot notes-image" data-image-key="worksExplanationImage"><img alt="作品说明图片" src="image-a33367de6d30d454.jpg"></div></div>
+      </div>
+      <div class="notes-extra-block">
+        <div class="section-label" data-key="notesGalleryLabel">PROJECT NOTES / EXTRA IMAGES/CREATION IMAGES</div>
+        <div class="notes-extra-gallery">
+          <div class="media-slot image-slot notes-extra-slot portrait-note" data-image-key="notesExtra1"><img alt="作品说明竖图一" src="image-a93be9904997fc12.jpg"></div>
+          <div class="media-slot image-slot notes-extra-slot portrait-note" data-image-key="notesExtra2"><img alt="作品说明竖图二" src="image-70e01fc733fd397a.jpg"></div>
+          <div class="media-slot image-slot notes-extra-slot portrait-note" data-image-key="notesExtra3"><img alt="作品说明竖图三" src="image-8edfdd22050abcb0.jpg"></div>
+          <div class="media-slot image-slot notes-extra-slot landscape-note" data-image-key="notesExtra4"><img alt="作品说明横图一" src="image-e2fa5b2aca6ba679.jpg"></div>
+          <div class="media-slot image-slot notes-extra-slot landscape-note" data-image-key="notesExtra5"><img alt="作品说明横图二" src="image-4b56ad444afc52c1.jpg"></div>
+          <div class="media-slot image-slot notes-extra-slot landscape-note" data-image-key="notesExtra6"><img alt="作品说明横图三" src="image-6b364c5a5a7e763f.jpg"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact" id="contact"><div class="contact-card"><div class="section-label" data-key="contactLabel">in the end</div><h2 data-key="contactTitle">THANKS FOR<br>WATCHING</h2><p data-key="contactCopy">如果你喜欢我的作品，欢迎和我联系。</p><a href="mailto:phchenyxoto@qq.com
++86 13820767266
+WeChat 13820767266" data-key="email"><span style="color: rgb(17, 17, 15); font-weight: 400; text-align: start;">phchenyxoto@qq.com</span><br style="color: rgb(17, 17, 15); font-weight: 400; text-align: start;"><span style="color: rgb(17, 17, 15); font-weight: 400; text-align: start;">+86 13820767266</span><div style="color: rgb(17, 17, 15); font-weight: 400; text-align: start;">WeChat 13820767266</div></a></div></section>
+  <footer><span data-key="footerLeft">© 2026 RILEY CHEN</span><span data-key="footerRight">PERSONAL PORTFOLIO</span></footer>
+
+  
+
+
+</body><div id="codex-browser-sidebar-comments-root" style="position: fixed; inset: 0px; pointer-events: none; z-index: 2147483647;"></div></html>
